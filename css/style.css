@@ -24,8 +24,9 @@
 }
 
 /* Deportiva Store */
-header {
-    text-align: center;
+header h1 {
+    margin: 10px auto;
+    width: fit-content; /* Ajusta según tus necesidades */
 }
 
 .top-title {
@@ -52,8 +53,9 @@ body{
     cursor: pointer;
 }
 
-img{
+img {
     max-width: 100%;
+    height: auto;
 }
 
 /* Header */
