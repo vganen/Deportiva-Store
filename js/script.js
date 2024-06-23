@@ -5,7 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     purchaseButton.textContent = 'Comprar';
     purchaseButton.classList.add('purchase-button');
     containerCartProducts.appendChild(purchaseButton);
-
+    const CCexpInput = document.getElementById('CCexp');
+    const expValue = CCexpInput.value;
+    const currentYear = new Date().getFullYear() % 100; // ultimos dos digitos del año en curso
+    const currentMonth = new Date().getMonth() + 1; // mes en curso(0-based)
+    const [expMonth, expYear] = expValue.split('/').map(num => parseInt(num, 10));
+   
     btnCart.addEventListener('click', () => {
         containerCartProducts.classList.toggle('hidden-cart');
     });
@@ -21,29 +26,65 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartEmpty = document.querySelector('.cart-empty');
     const cartTotal = document.querySelector('.cart-total');
 
-    productsList.addEventListener('click', e => {
-        if (e.target.classList.contains('btn-add-cart')) {
-            const product = e.target.parentElement;
+    // Cargar productos desde JSON
+    fetch('productos.json')
+        .then(response => response.json())
+        .then(data => {
+            displayProducts(data);
+        })
+        .catch(error => console.error('Error al cargar los productos:', error));
 
-            const infoProduct = {
-                quantity: 1,
-                title: product.querySelector('h2').textContent,
-                price: product.querySelector('p').textContent,
-            };
+    const displayProducts = (productos) => {
+        productsList.innerHTML = ''; // Limpia lista de productos antes de agregar nuevos
 
-            const exists = allProducts.some(
-                product => product.title === infoProduct.title
-            );
+        productos.forEach(producto => {
+            const item = document.createElement('div');
+            item.classList.add('item');
 
-            if (exists) {
-                alert('Este artículo ya está en el carrito.');
-            } else {
-                allProducts = [...allProducts, infoProduct];
-                saveLocal();
-                showHTML();
-            }
+            item.innerHTML = `
+                <figure>
+                    <img src="${producto.image}" alt="${producto.title}" />
+                </figure>
+                <div class="info-product">
+                    <h2>${producto.title}</h2>
+                    <h3>Talla</h3>
+                    <select class="tallas">
+                        ${producto.tallas.map(talla => `<option value="${talla}">${talla}</option>`).join('')}
+                    </select>
+                    <p class="price">$${producto.price.toFixed(2)}</p>
+                    <button class="btn-add-cart">Añadir al carrito</button>
+                </div>
+            `;
+
+            productsList.appendChild(item);
+        });
+
+        const addCartButtons = document.querySelectorAll('.btn-add-cart');
+        addCartButtons.forEach(button => {
+            button.addEventListener('click', addToCart);
+        });
+    };
+    const addToCart = (e) => {
+        const product = e.target.parentElement;
+
+        const infoProduct = {
+            quantity: 1,
+            title: product.querySelector('h2').textContent,
+            price: product.querySelector('p').textContent,
+        };
+
+        const exists = allProducts.some(
+            product => product.title === infoProduct.title
+        );
+
+        if (exists) {
+            swal('Este artículo ya está en el carrito.');
+        } else {
+            allProducts = [...allProducts, infoProduct];
+            saveLocal();
+            showHTML();
         }
-    });
+    };
 
     rowProduct.addEventListener('click', e => {
         if (e.target.closest('.icon-close')) {
@@ -84,42 +125,110 @@ document.addEventListener('DOMContentLoaded', () => {
             showHTML();
         }
     });
+// Modal
+const modal = document.getElementById("purchaseModal");
+const closeModalBtn = document.querySelector(".close");
+const finalizarCompraBtn = document.getElementById("finalizarCompra");
 
-    // Modal
-    const modal = document.getElementById("purchaseModal");
-    const closeModalBtn = document.querySelector(".close");
-    const finalizarCompraBtn = document.getElementById("finalizarCompra");
-    // Abrir moda al hacer click en comprar
-    purchaseButton.addEventListener('click', () => {
-        if (allProducts.length === 0) {
-            alert('El carrito está vacío!');
-        } else {
-            modal.style.display = "block";
-        }
-    });
-    // Cerrar modal
-    closeModalBtn.addEventListener('click', () => {
+// Abrir modal al hacer click en comprar
+purchaseButton.addEventListener('click', () => {
+    if (allProducts.length === 0) {
+        swal('El carrito está vacío!');
+    } else {
+        modal.style.display = "block";
+    }
+});
+
+// Cerrar modal
+closeModalBtn.addEventListener('click', () => {
+    modal.style.display = "none";
+});
+
+// Cerrar modal cuando hay click afuera
+window.addEventListener('click', (event) => {
+    if (event.target == modal) {
         modal.style.display = "none";
-    });
-    // Cerrar modal cuando hay click afuera
-    window.addEventListener('click', (event) => {
-        if (event.target == modal) {
-            modal.style.display = "none";
+    }
+});
+
+// Validar fecha de vencimiento
+function validateExpirationDate() {
+    const CCexpInput = document.getElementById('CCexp');
+    const expValue = CCexpInput.value;
+    const currentYear = new Date().getFullYear() % 100; // ultimos dos digitos del año en curso
+    const currentMonth = new Date().getMonth() + 1; // mes en curo (0-based)
+    const [expMonth, expYear] = expValue.split('/').map(num => parseInt(num, 10));
+
+    if (!expMonth || !expYear || expMonth < 1 || expMonth > 12 || expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+        swal('Tu tarjeta parece estar vencida, checkea su fecha de vencimiento');
+        CCexpInput.focus();
+        return false;
+    }
+    return true;
+}
+
+// Validar fecha de nacimiento
+function validateBirthDate() {
+    const birthDateInput = document.getElementById('fechaNacimiento').value;
+    const birthDateParts = birthDateInput.split('/');
+    const birthDate = new Date(`${birthDateParts[2]}-${birthDateParts[1]}-${birthDateParts[0]}`);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const dayDiff = today.getDate() - birthDate.getDate();
+
+    if (age > 18 || (age === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)))) {
+        return true;
+    } else {
+        swal('Debes tener al menos 18 años para poder comprar en deportiva store.');
+        return false;
+    }
+}
+
+// Restringir la entrada al formato DD/MM/YYYY y permitir solo números.
+document.getElementById('fechaNacimiento').addEventListener('input', function(e) {
+    let input = e.target.value.replace(/\D/g, '');
+    if (input.length <= 8) {
+        if (input.length > 4) {
+            input = input.slice(0, 2) + '/' + input.slice(2, 4) + '/' + input.slice(4);
+        } else if (input.length > 2) {
+            input = input.slice(0, 2) + '/' + input.slice(2);
         }
-    });
-    // Finalizar compra
-    finalizarCompraBtn.addEventListener('click', () => {
-        const form = document.getElementById('purchaseForm');
-        if (form.checkValidity()) {
+        e.target.value = input;
+    } else {
+        e.target.value = input.slice(0, 10);
+    }
+});
+
+// Restringir la entrada al formato DD/MM/YYYY y permitir solo números.
+document.getElementById('CCexp').addEventListener('input', function(e) {
+    let input = e.target.value.replace(/\D/g, ''); // Remueve caracteres non-numeric
+    if (input.length <= 4) {
+        if (input.length >= 2) {
+            input = input.slice(0, 2) + '/' + input.slice(2);
+        }
+        e.target.value = input;
+    } else {
+        e.target.value = input.slice(0, 5);
+    }
+});
+
+// Finalizar compra
+finalizarCompraBtn.addEventListener('click', () => {
+    const form = document.getElementById('purchaseForm');
+    if (form.checkValidity()) {
+        if (validateBirthDate() && validateExpirationDate()) {
             modal.style.display = "none";
             allProducts = [];
             localStorage.removeItem("AddedToCart");
             showHTML();
-            alert('Nuestro equipo de venta se contactará contigo en 24hs, ¡Gracias por tu compra!');
-        } else {
-            form.reportValidity();
+            swal("¡Gracias por tu compra!", "Nuestro equipo de venta se contactará contigo en 24hs", "success");
         }
-    });
+    } else {
+        form.reportValidity();
+    }
+});
+
 
     const showHTML = () => {
         if (!allProducts.length) {

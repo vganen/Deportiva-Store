@@ -374,4 +374,56 @@ footer{
 .modal-content button:hover {
     background-color: #333;
 }
+.inline-fields {
+    display: flex;
+    justify-content: space-between;
+}
 
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+}
+
+.field-wrapper:last-child {
+    margin-right: 0;
+}
+
+/* Estilo del select de tallas */
+.container-items .info-product .tallas {
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 1em;
+    appearance: none; /* Oculta el ícono por defecto */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3csvg xmlns%3d%27http%3a//www.w3.org/2000/svg%27 viewBox%3d%270 0 4 5%27%3e%3cpath fill%3d%27%23000000%27 d%3d%27M2 0L0 2h4zM0 3l2 2 2-2H0z%27/%3e%3c/svg%3e');
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 10px 10px;
+}
+
+.container-items .info-product .tallas:focus {
+    border-color: #007bff;
+    outline: none;
+}
+/* Estilo para el botón de añadir al carrito */
+.btn-add-cart {
+    background-color: #007bff; /* Color de fondo original */
+    color: white; /* Color del texto */
+    padding: 10px 20px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    cursor: pointer; /* Cursor de puntero al pasar por encima */
+    transition: background-color 0.3s, transform 0.3s; /* Transiciones suaves */
+}
+
+.btn-add-cart:hover {
+    background-color: #007bff; /* Color de fondo al pasar el ratón por encima */
+    transform: scale(1.05); /* Aumentar ligeramente el tamaño */
+}

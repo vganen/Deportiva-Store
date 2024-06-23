@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deportiva Store</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/script.js"></script>
+    <script defer src="js/script.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
 <body>
@@ -54,66 +55,7 @@
         </div>
     </header>
     <div class="container-items">
-        <div class="item">
-            <figure>
-                <img src="css/IMG/top2.jpg" alt="Top de mujer" />
-            </figure>
-            <div class="info-product">
-                <h2>TOP</h2>
-                <p class="price">$1290</p>
-                <button class="btn-add-cart">Añadir al carrito</button>
-            </div>
-        </div>
-        <div class="item">
-            <figure>
-                <img src="css/IMG/calza.jpg" alt="Calza mujer" />
-            </figure>
-            <div class="info-product">
-                <h2>Calza</h2>
-                <p class="price">$2390</p>
-                <button class="btn-add-cart">Añadir al carrito</button>
-            </div>
-        </div>
-        <div class="item">
-            <figure>
-                <img src="css/IMG/short.jpg" alt="Shrot de mujer" />
-            </figure>
-            <div class="info-product">
-                <h2>Short dri-fit</h2>
-                <p class="price">$2490</p>
-                <button class="btn-add-cart">Añadir al carrito</button>
-            </div>
-        </div>
-        <div class="item">
-            <figure>
-                <img src="css/IMG/nikeinseasontr13.jpg.webp" alt= "Zapatillas Nike" />
-            </figure>
-            <div class="info-product">
-                <h2>Nike In-season Tr13</h2>
-                <p class="price">$4990</p>
-                <button class="btn-add-cart">Añadir al carrito</button>
-            </div>
-        </div>
-        <div class="item">
-            <figure>
-                <img src="css/IMG/NikeFreeMaraton.jpg.webp" alt="Zapatillas Nike" />
-            </figure>
-            <div class="info-product">
-                <h2>Nike Free Metcon 5</h2>
-                <p class="price">$6990</p>
-                <button class="btn-add-cart">Añadir al carrito</button>
-            </div>
-        </div>
-        <div class="item">
-            <figure>
-                <img src="css/IMG/NikeZoomBella6.jpg.webp" alt="Zapatillas Nike" />
-            </figure>
-            <div class="info-product">
-                <h2>Nike Zoom Bella 6</h2>
-                <p class="price">$5790</p>
-                <button class="btn-add-cart">Añadir al carrito</button>
-            </div>
-        </div>
+        <!-- Los productos se cargarán dinámicamente aquí -->
     </div>
     <div id="purchaseModal" class="modal">
         <div class="modal-content">
@@ -128,6 +70,23 @@
                 <input type="tel" id="telefono" name="telefono" required>
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
+                <label for="fechaNacimiento">Fecha de Nacimiento (DD/MM/YYYY):</label>
+            <input type="text" id="fechaNacimiento" name="fechaNacimiento" placeholder="DD/MM/YYYY" maxlength="10" required>
+    
+                <label for="CCnumber">Tarjeta de Crédito:</label>
+                <input type="text" id="CCnumber" name="CCnumber" required>
+    
+                <div class="inline-fields">
+                    <div class="field-wrapper">
+                        <label for="CCexp">Fecha de Vencimiento (MM/YY):</label>
+                        <input type="text" id="CCexp" name="CCexp" placeholder="MM/YY" maxlength="5" required>
+                    </div>
+                    <div class="field-wrapper">
+                        <label for="CVC">Código de Seguridad:</label>
+                        <input type="text" id="CVC" name="CVC" maxlength="3" required>
+                    </div>
+                </div>
+    
                 <button type="button" id="finalizarCompra">Finalizar Compra</button>
             </form>
         </div>
